@@ -32,13 +32,21 @@ exports.createPost = (req, res, next) => {
     //The above line throws the error object, which will be caught by any
     //error handling middleware that has been set up in the application.(in app.js)
   }
+  //if re.file is empty w/c means we missed a file(in this case image file)
+  if (!req.file) {
+    const error = new Error("No image provided");
+    error.statusCode = 422;
+    throw error;
+  }
+  const imageUrl = req.file.path.replace("\\", "/");
+  console.log("this is an image", imageUrl);
   const title = req.body.title;
   const content = req.body.content;
   // Create post in DB
   const post = new Post({
     title: title,
     content: content,
-    imageUrl: "images/test.png",
+    imageUrl: imageUrl,
     creator: { name: "Faysel" },
   });
   post
