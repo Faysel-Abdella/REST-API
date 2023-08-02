@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -12,6 +13,8 @@ const feedRoutes = require("./routes/feed");
 
 //For parsing json data(application/json) from incoming req we use the following
 app.use(bodyParser.json());
+//For any file request start with '/images' go to the images folder
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 app.use((req, res, next) => {
   //set header to all response, NOTE that setHeader() does not send response
@@ -27,6 +30,16 @@ app.use((req, res, next) => {
 });
 
 app.use("/feed", feedRoutes);
+
+//register a general error handling middleware
+app.use((error, req, res, next) => {
+  const status = error.statusCode || 500; // if statusCode is undefined 500 will be
+  //All error obj has message field by defualt. (or what you pass in constructor of Error("message"))
+  const message = error.message;
+  res.status(status).json({
+    message: message,
+  });
+});
 
 mongoose
   .connect(
