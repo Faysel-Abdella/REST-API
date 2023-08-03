@@ -67,8 +67,10 @@ app.use((error, req, res, next) => {
   const status = error.statusCode || 500; // if statusCode is undefined 500 will be
   //All error obj has message field by defualt. (or what you pass in constructor of Error("message"))
   const message = error.message;
+  const data = error.data;
   res.status(status).json({
     message: message,
+    data: data,
   });
 });
 
