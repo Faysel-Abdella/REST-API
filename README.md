@@ -4,10 +4,10 @@
 This API allow you to creat, get, update, delete posts, with user signup and login authenticaton you can use it for learning purposes.
 
 🛠️ Tools used
-# Node.js
-# Express.js
-# Mongodb
-# Mongoose
+* Node.js
+* Express.js
+* Mongodb
+* Mongoose
 
 * bcryptjs
 * body-parser
