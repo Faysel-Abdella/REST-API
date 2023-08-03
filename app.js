@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
     cb(null, "images");
   },
   filename: function (req, file, cb) {
-    cb(null, uuidv4());
+    cb(null, uuidv4() + "-" + file.originalname);
   },
 });
 
@@ -49,7 +49,10 @@ app.use((req, res, next) => {
   // '*' means for do this for domains, you can do this for a specific domain
 
   //set which methods do you want to allow to be sended to your server
-  res.setHeader("Access-Control-Allow-Method", "GET, POST, PUT, PATCH, DELETE");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE"
+  );
   //set which header do you want to allow to be sended your server
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
