@@ -108,7 +108,7 @@ exports.updatePost = (req, res, next) => {
   const content = req.body.content;
   let imageUrl = req.body.image;
   if (req.file) {
-    imageUrl = req.file.path;
+    imageUrl = req.file.path.replace("\\", "/");
   }
   // If imageUrl did not set until now
   if (!imageUrl) {
