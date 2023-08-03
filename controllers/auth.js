@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 
 const User = require("../models/user");
@@ -41,16 +42,18 @@ exports.signup = (req, res, next) => {
 exports.login = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  let loadeUser;
-  User.findOne({ emil: email })
+  let loadedUser;
+  User.findOne({ email: email })
     .then((user) => {
+      console.log("This is th user", user, "email", email);
       if (!user) {
         const error = new Error(
           "A user email could not found, please signup first"
         );
-        ErrorEvent.statusCode = 401;
+        error.statusCode = 401;
         throw error;
       }
+      loadedUser = user;
       return bcrypt.compare(password, user.password);
     })
     .then((isEqual) => {
@@ -59,6 +62,20 @@ exports.login = (req, res, next) => {
         error.statusCode = 401;
         throw error;
       }
+      //At this point the enterd really a valid credantial
+      //Generate a new token
+      const token = jwt.sign(
+        {
+          email: loadedUser.email,
+          userId: loadedUser._id.toString(),
+        },
+        "supersecretsecret",
+        { expiresIn: "1h" }
+      );
+      res.status(200).json({
+        token: token,
+        userId: loadedUser._id.toString(),
+      });
     })
     .catch((err) => {
       if (!err.statusCode) {
