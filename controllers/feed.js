@@ -145,6 +145,12 @@ exports.updatePost = (req, res, next) => {
         error.statusCode = 422;
         throw error;
       }
+      //check if the post really belongs to the currently logged in user
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error("Not authorized for this process");
+        error.statusCode = 403;
+        throw error;
+      }
       //if the image changed, unlike the first image
       if (imageUrl !== post.imageUrl) {
         cleareImage(post.imageUrl);
@@ -173,6 +179,12 @@ exports.deletePost = (req, res, next) => {
       if (!post) {
         const error = new Error("No such post");
         error.statusCode = 422;
+        throw error;
+      }
+      //check if the post really belongs to the currently logged in user
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error("Not authorized for this process");
+        error.statusCode = 403;
         throw error;
       }
       // Checked logged in user
