@@ -4,6 +4,7 @@ const path = require("path");
 const { validationResult } = require("express-validator");
 
 const Post = require("../models/post");
+const User = require("../models/user");
 
 exports.getPosts = (req, res, next) => {
   const currentPage = req.query.page || 1;
@@ -50,20 +51,33 @@ exports.createPost = (req, res, next) => {
   const imageUrl = req.file.path.replace("\\", "/");
   const title = req.body.title;
   const content = req.body.content;
+  let creator;
   // Create post in DB
   const post = new Post({
     title: title,
     content: content,
     imageUrl: imageUrl,
-    creator: { name: "Faysel" },
+    //use the attached userId
+    creator: req.userId,
   });
   post
     .save()
     .then((result) => {
-      console.log(result);
+      //found the currently logged in user
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      creator = user;
+      user.posts.push(post);
+      //The above  line push the post id only(since the type is defined as Schema.Types.ObjectId)
+      // to the user posts array
+      return user.save();
+    })
+    .then((result) => {
       res.status(201).json({
         message: "Post created sucessfully",
-        post: result,
+        post: post,
+        creator: { _id: creator._id, name: creator.name },
       });
     })
     .catch((err) => {
