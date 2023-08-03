@@ -182,7 +182,7 @@ exports.deletePost = (req, res, next) => {
         throw error;
       }
       //check if the post really belongs to the currently logged in user
-      if (post.creator.toString() !== req.userId) {
+      if (post.creator.toString() !== req.userId.toString()) {
         const error = new Error("Not authorized for this process");
         error.statusCode = 403;
         throw error;
@@ -193,6 +193,9 @@ exports.deletePost = (req, res, next) => {
     })
     .then((result) => {
       return Post.findByIdAndRemove(postId);
+    })
+    .then((result) => {
+      return User.findById(req.userId);
     })
     .then((user) => {
       user.posts.pull(postId);
